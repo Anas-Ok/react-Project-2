@@ -2,12 +2,26 @@ import ProductCard from './components/ProductCard'
 import products, { formInputsList } from './data'
 import Model from './components/UI/Model'
 import Button from './components/UI/Button'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import Input from './components/UI/Input'
+import { IProduct } from './interfaces'
 
 const App = () => {
   
-  let [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(true)
+
+  const [product, setProduct] = useState<IProduct>({
+    title: '',
+    description: '',
+    imageURL: '',
+    price: '',
+    colors: [],
+    category: {
+      name: '',
+      imageURL: ''
+    }
+  })
+
 
   function open() {
     setIsOpen(true)
@@ -17,12 +31,24 @@ const App = () => {
     setIsOpen(false)
   }
 
+  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setProduct( {
+      
+        ...product,
+        [name]: value,
+      
+      }
+    )
+
+  }
+
   const renderproductlist = products.map((product) => <ProductCard key={product.id} Product={product}/>)
   const renderforminputs = formInputsList.map((formInput) =>
    
   <div className='flex flex-col'>
     <label  htmlFor={formInput.id} className='text-black mb-[2px]'>{formInput.label}</label>
-    <Input type={formInput.type} id={formInput.id} name={formInput.name}/>
+    <Input type={formInput.type} id={formInput.id} name={formInput.name} value={product[formInput.name]} onChange={onChangeHandler}/>
   </div>
   )
 
@@ -41,13 +67,13 @@ const App = () => {
       </div>
 
       <Model isOpen={isOpen} close={close} title='ADD PRODUCT'>
-          <div className='space-y-2'>
+          <form className='space-y-2' onSubmit={(e) => e.preventDefault()}>
             {renderforminputs}
-            <div className='flex items-center space-x-4'>
-              <Button className='bg-indigo-600 hover:bg-indigo-800'>Submit</Button>
-              <Button onClick={() => close()} className='bg-gray-400 hover:bg-gray-600'>Cancel</Button>
+            <div className='flex items-center space-x-4 '>
+              <Button className='bg-indigo-600 hover:bg-indigo-800 mt-3'>Submit</Button>
+              <Button onClick={() => close()} className='bg-gray-400 hover:bg-gray-600 mt-3'>Cancel</Button>
             </div>
-          </div>
+          </form>
 
       </Model>
 
